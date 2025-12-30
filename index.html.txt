@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Media Share</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #f4f4f9; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .upload-btn { background: #007bff; color: white; padding: 15px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-bottom: 20px; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 30px; }
+        .media-item img, .media-item video { width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Public Media Gallery</h1>
+    <p>Upload your pictures and videos for the world to see!</p>
+    
+    <!-- Upload Button -->
+    <button id="upload_widget" class="upload-btn">Upload Media</button>
+
+    <div class="gallery" id="media-gallery">
+        <!-- New uploads will appear here -->
+    </div>
+</div>
+
+<!-- Cloudinary Upload Widget Script (Free Service) -->
+<script src="upload-widget.cloudinary.com" type="text/javascript"></script>
+
+<script type="text/javascript">  
+    // Replace 'your_cloud_name' and 'your_preset' with your actual Cloudinary details
+    const myWidget = cloudinary.createUploadWidget({
+        cloudName: 'demo', 
+        uploadPreset: 'unsigned_preset'
+    }, (error, result) => { 
+        if (!error && result && result.event === "success") { 
+            console.log('Done! Here is the image info: ', result.info); 
+            addMediaToGallery(result.info);
+        }
+    });
+
+    document.getElementById("upload_widget").addEventListener("click", function(){
+        myWidget.open();
+    }, false);
+
+    function addMediaToGallery(info) {
+        const gallery = document.getElementById('media-gallery');
+        const div = document.createElement('div');
+        div.className = 'media-item';
+        
+        if (info.resource_type === "image") {
+            div.innerHTML = `<img src="${info.secure_url}" alt="Uploaded Image">`;
+        } else {
+            div.innerHTML = `<video controls><source src="${info.secure_url}"></video>`;
+        }
+        gallery.prepend(div);
+    }
+</script>
+
+</body>
+</html>
